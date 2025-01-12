@@ -24,21 +24,32 @@ class AddBookActivity : AppCompatActivity() {
         val bookIsbn = findViewById<EditText>(R.id.bookIsbn)
         val authorName = findViewById<EditText>(R.id.authorName)
         val saveBookButton = findViewById<Button>(R.id.saveBookButton)
+        val backButton = findViewById<Button>(R.id.backButton)
+
+        backButton.setOnClickListener {
+            finish()
+        }
 
         saveBookButton.setOnClickListener {
             val title = bookTitle.text.toString().trim()
             val isbn = bookIsbn.text.toString().trim()
-            val author = authorName.text.toString().trim()
+            val authors = authorName.text.toString().trim()
 
-            if (title.isEmpty() || isbn.isEmpty() || author.isEmpty()) {
+            if (title.isEmpty() || isbn.isEmpty() || authors.isEmpty()) {
                 Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            val authorNames = authors.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+
             lifecycleScope.launch {
                 val bookId = viewModel.addBook(title, isbn)
-                val authorId = viewModel.addAuthor(author)
-                viewModel.addBookAuthorCrossRef(bookId, authorId)
+
+                for (authorName in authorNames) {
+                    val authorId = viewModel.addAuthor(authorName)
+                    viewModel.addBookAuthorCrossRef(bookId, authorId)
+                }
+
                 Toast.makeText(this@AddBookActivity, "Book Added", Toast.LENGTH_SHORT).show()
                 finish()
             }

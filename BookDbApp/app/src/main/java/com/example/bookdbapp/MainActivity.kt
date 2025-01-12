@@ -28,7 +28,12 @@ class MainActivity : AppCompatActivity() {
         val bookList = findViewById<RecyclerView>(R.id.bookList)
         val addBookButton = findViewById<Button>(R.id.addBookButton)
 
-        val adapter = BookListAdapter()
+        val adapter = BookListAdapter {
+                bookWithAuthors ->
+            val intent = Intent(this, BookDetailActivity::class.java)
+            intent.putExtra("BOOK_ID", bookWithAuthors.book.id)
+            startActivity(intent)
+        }
         bookList.layoutManager = LinearLayoutManager(this)
         bookList.adapter = adapter
 

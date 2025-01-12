@@ -52,4 +52,20 @@ interface BookDao {
     @Query("SELECT * FROM books WHERE id = :bookId")
     fun getBookWithAuthors(bookId: Long): Flow<List<BookWithAuthors>>
 
+    @Transaction
+    @Query("SELECT * FROM books WHERE id = :bookId")
+    suspend fun getSingleBookWithAuthors(bookId: Long): BookWithAuthors?
+
+    @Transaction
+    suspend fun deleteBookWithAuthors(bookId: Long) {
+        deleteBookAuthorsCrossRefs(bookId)
+        deleteBook(bookId)
+    }
+
+    @Query("DELETE FROM BookAuthorCrossRef WHERE bookId = :bookId")
+    suspend fun deleteBookAuthorsCrossRefs(bookId: Long)
+
+    @Query("DELETE FROM books WHERE id = :bookId")
+    suspend fun deleteBook(bookId: Long)
+
 }
